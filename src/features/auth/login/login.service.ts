@@ -1,4 +1,4 @@
-import { AuthRepository } from "../../../data/repositories/auth.repository";
+import { UserRepository } from "../../../data/repositories/user.repository";
 import { BadRequestError, NotFoundError } from "../../../models/errors";
 import { loginValidationSchema } from "./login.validation";
 
@@ -14,7 +14,7 @@ type Success = {
 type LoginResult = Promise<BadRequestError | NotFoundError | Success>;
 
 export class LoginService {
-  constructor(private _authRepository = new AuthRepository()) {}
+  constructor(private _userRepository = new UserRepository()) {}
 
   login = async (props: LoginProps): LoginResult => {
     const validationResult = this._isParamsValid(props);
@@ -23,7 +23,7 @@ export class LoginService {
       return new BadRequestError(validationResult?.message);
     }
 
-    const user = await this._authRepository.getUserByEmail(props.email);
+    const user = await this._userRepository.getUserByEmail(props.email);
 
     if (
       user == null ||

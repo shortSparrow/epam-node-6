@@ -1,4 +1,4 @@
-import { AuthRepository } from "../../../data/repositories/auth.repository";
+import { UserRepository } from "../../../data/repositories/user.repository";
 import { BadRequestError } from "../../../models/errors";
 import { registerValidationSchema } from "./register.validation";
 
@@ -14,7 +14,7 @@ type Success = {
 };
 
 export class RegisterService {
-  constructor(private _authRepository = new AuthRepository()) {}
+  constructor(private _userRepository = new UserRepository()) {}
 
   registerUser = async (
     props: RegisterUserProps
@@ -25,7 +25,7 @@ export class RegisterService {
       return new BadRequestError(validationResult?.message);
     }
 
-    const user = await this._authRepository.addUser({
+    const user = await this._userRepository.addUser({
       email: props.email,
       password: props.password,
       role: "admin",
