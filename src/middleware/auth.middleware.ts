@@ -3,7 +3,11 @@ import jwt from "jsonwebtoken";
 import { AuthToken } from "../..";
 import { UserRepository } from "../data/repositories/user.repository";
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers.authorization;
   const userRepository = new UserRepository();
 
@@ -21,12 +25,13 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     }
 
     const token = decoded as AuthToken;
-    console.log('Email: ', token.email)
+
     const user = await userRepository.getUserByEmail(token.email);
 
     if (user === null) {
       return res.status(403).send("You must be authorized user");
     }
+    token.id = user.id;
 
     req.verifiedToken = token;
     next();

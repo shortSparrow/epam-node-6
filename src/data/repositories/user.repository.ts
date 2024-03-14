@@ -12,16 +12,9 @@ export class UserRepository {
 
     return Promise.resolve(savedUser);
   };
-  
+
   getUserByEmail = async (email: string): Promise<UserDb | null> => {
     const existingUser = usersDb.find((user) => user.email === email);
     return Promise.resolve(existingUser ?? null);
   };
-
-  // getUserByAccessToken = async (
-  //   accessToken: string
-  // ): Promise<UserDb | null> => {
-  //   const existingUser = usersDb.find((user) => user.token === accessToken);
-  //   return Promise.resolve(existingUser ?? null);
-  // };
 }
