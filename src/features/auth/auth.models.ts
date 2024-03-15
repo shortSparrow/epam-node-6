@@ -1,6 +1,5 @@
-export type RegisterSuccess = {
-    id: string;
-    email: string;
-    role: string;
-  };
-  
+export interface RegisterSuccess {
+  id: string;
+  email: string;
+  role: string;
+}

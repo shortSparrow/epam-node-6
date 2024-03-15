@@ -1,4 +1,3 @@
 import { OrderDb } from "../../data/models/order";
 
-
-export type CheckoutSuccess = OrderDb;
+export interface CheckoutSuccess extends OrderDb {}

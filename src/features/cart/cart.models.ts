@@ -1,16 +1,16 @@
 import { CartItemDb } from "../../data/models/cart";
 
-export type CartResponse = {
+export interface CartResponse {
   userId: string;
   items: CartItemDb[];
-};
+}
 
-export type AddToCartSuccess = {
+export interface AddToCartSuccess {
   cart: CartResponse;
   total: number;
-};
+}
 
-export type GetCartSuccess = {
+export interface GetCartSuccess {
   cart: CartResponse;
   total: number;
-};
+}

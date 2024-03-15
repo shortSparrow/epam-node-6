@@ -1,8 +1,8 @@
-export type ProductResponse = {
+export interface ProductResponse {
   id: string;
   title: string;
   description: string;
   price: number;
-};
+}
 
-export type ProductDetailsResponse = ProductResponse;
+export interface ProductDetailsResponse extends ProductResponse {}
