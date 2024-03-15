@@ -8,32 +8,39 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
-  const userRepository = new UserRepository();
+  try {
+    const authHeader = req.headers.authorization;
+    const userRepository = new UserRepository();
 
-  const accessToken = authHeader?.split(" ")[1];
-  const tokenIsNotBearer = authHeader?.split(" ")[0] !== "Bearer";
-  if (!accessToken || tokenIsNotBearer) {
-    return res.status(401).send("Access Denied. No token or token is invalid");
-  }
+    const accessToken = authHeader?.split(" ")[1];
+    const tokenIsNotBearer = authHeader?.split(" ")[0] !== "Bearer";
 
-  jwt.verify(accessToken, "secret_from_env", async (error, decoded) => {
-    if (error) {
+    if (!accessToken || tokenIsNotBearer) {
       return res
         .status(401)
-        .send("Access Denied. No token or token is expired");
+        .send("Access Denied. No token or token is invalid");
     }
 
-    const token = decoded as AuthToken;
+    jwt.verify(accessToken, "secret_from_env", async (error, decoded) => {
+      if (error) {
+        return res
+          .status(401)
+          .send("Access Denied. No token or token is expired");
+      }
 
-    const user = await userRepository.getUserByEmail(token.email);
+      const token = decoded as AuthToken;
 
-    if (user === null) {
-      return res.status(403).send("You must be authorized user");
-    }
-    token.id = user.id;
+      const user = await userRepository.getUserByEmail(token.email);
 
-    req.verifiedToken = token;
-    next();
-  });
+      if (user === null) {
+        return res.status(403).send("You must be authorized user");
+      }
+      token.id = user.id;
+
+      req.verifiedToken = token;
+      next();
+    });
+  } catch (err) {
+    next(err);
+  }
 };
