@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { CheckoutService } from "./checkout.service";
-import { NotFoundError } from "../../models/errors";
+import { BadRequestError } from "../../models/errors";
 
 export const checkoutController = async (req: Request, res: Response) => {
   const checkoutService = new CheckoutService();
@@ -8,7 +8,7 @@ export const checkoutController = async (req: Request, res: Response) => {
 
   const response = await checkoutService.checkout(userId);
 
-  if (response instanceof NotFoundError) {
+  if (response instanceof BadRequestError) {
     return res.status(response.code).json({
       data: null,
       error: response.message,
@@ -20,3 +20,5 @@ export const checkoutController = async (req: Request, res: Response) => {
     error: null,
   });
 };
+
+// TODO 500 error; and refactoring

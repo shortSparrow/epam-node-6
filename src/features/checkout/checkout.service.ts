@@ -1,10 +1,10 @@
 import { ORDER_STATUS, OrderDb } from "../../data/models/order";
 import { CartRepository } from "../../data/repositories/cart.repository";
 import { CheckoutRepository } from "../../data/repositories/checkout.repository";
-import { NotFoundError } from "../../models/errors";
+import { BadRequestError } from "../../models/errors";
 import { getCartTotalSum } from "../cart/utils/cart.utils";
 
-type CheckoutResponse = Promise<NotFoundError | { order: OrderDb }>;
+type CheckoutResponse = Promise<BadRequestError | { order: OrderDb }>;
 
 export class CheckoutService {
   constructor(
@@ -16,7 +16,7 @@ export class CheckoutService {
     const userCart = await this._cartRepository.getUserCart(userId);
 
     if (userCart === null) {
-      return new NotFoundError("Cart was not found");
+      return new BadRequestError("Cart is empty");
     }
 
     const order = await this._checkoutRepository.placeOrder({
