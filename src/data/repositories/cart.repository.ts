@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { cartDb, usersDb } from "../db";
+import { cartDb } from "../db";
 import { CartDb, CartItemDb } from "../models/cart";
 
 export class CartRepository {
