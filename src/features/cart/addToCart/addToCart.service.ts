@@ -1,7 +1,8 @@
-import { CartDb, CartItemDb } from "../../../data/models/cart";
 import { CartRepository } from "../../../data/repositories/cart.repository";
 import { ProductsRepository } from "../../../data/repositories/products.repository";
+import { CartMapper } from "../../../mapper/cart.mapper";
 import { BadRequestError, NotFoundError } from "../../../models/errors";
+import { AddToCartSuccess } from "../cart.models";
 import { getCartTotalSum } from "../utils/cart.utils";
 import { addToCartValidationSchema } from "./addToCart.validation";
 
@@ -11,22 +12,15 @@ type AddToCartProps = {
   userId: string;
 };
 
-type CartResponse = {
-  userId: string;
-  items: CartItemDb[];
-};
-
-type Success = {
-  cart: CartResponse;
-  total: number;
-};
-
-type AddToCartResponse = Promise<NotFoundError | BadRequestError | Success>;
+type AddToCartResponse = Promise<
+  NotFoundError | BadRequestError | AddToCartSuccess
+>;
 
 export class AddToCartService {
   constructor(
     private _cartRepository = new CartRepository(),
-    private _productsRepository = new ProductsRepository()
+    private _productsRepository = new ProductsRepository(),
+    private _cartMapper = new CartMapper()
   ) {}
 
   addToCart = async ({
@@ -54,7 +48,6 @@ export class AddToCartService {
     }
 
     if (userCart === null) {
-      // return new NotFoundError('Cart was not found')
       await this._cartRepository.initiateCart(userId);
     }
 
@@ -63,7 +56,7 @@ export class AddToCartService {
     ]);
 
     return {
-      cart: cartDbToCartResponse(cart),
+      cart: this._cartMapper.cartDbToCartResponse(cart),
       total: getCartTotalSum(cart),
     };
   };
@@ -73,8 +66,3 @@ export class AddToCartService {
     return validationResult.error;
   }
 }
-
-const cartDbToCartResponse = (cartDb: CartDb): CartResponse => ({
-  userId: cartDb.userId,
-  items: cartDb.items,
-});

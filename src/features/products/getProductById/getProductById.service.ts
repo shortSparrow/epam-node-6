@@ -1,14 +1,18 @@
 import { ProductsRepository } from "../../../data/repositories/products.repository";
+import { ProductsMapper } from "../../../mapper/products.mapper";
 import { BadRequestError } from "../../../models/errors";
-import { ProductResponse } from "../getAllProducts/product.models";
+import { ProductDetailsResponse } from "../product.models";
 import { getProductByIdValidationSchema } from "./getProductById.validation";
 
 export class GetProductByIdService {
-  constructor(private _productsRepository = new ProductsRepository()) {}
+  constructor(
+    private _productsRepository = new ProductsRepository(),
+    private _productsMapper = new ProductsMapper()
+  ) {}
 
   getProductById = async (
     productId: string
-  ): Promise<BadRequestError | ProductResponse | null> => {
+  ): Promise<BadRequestError | ProductDetailsResponse | null> => {
     const isError = this._isParamsValid(productId);
     if (isError) {
       return new BadRequestError("invalid productId");
@@ -20,12 +24,9 @@ export class GetProductByIdService {
       return null;
     }
 
-    return {
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      price: product.price,
-    };
+    return this._productsMapper.dbProductDetailsToProductDetailsResponse(
+      product
+    );
   };
 
   private _isParamsValid = (productId: string) => {

@@ -1,15 +1,19 @@
-import { ORDER_STATUS, OrderDb } from "../../data/models/order";
+import { ORDER_STATUS } from "../../data/models/order";
 import { CartRepository } from "../../data/repositories/cart.repository";
 import { CheckoutRepository } from "../../data/repositories/checkout.repository";
+import { OrderMapper } from "../../mapper/order.mapper";
 import { BadRequestError } from "../../models/errors";
 import { getCartTotalSum } from "../cart/utils/cart.utils";
+import { CheckoutSuccess } from "./checkout.models";
 
-type CheckoutResponse = Promise<BadRequestError | { order: OrderDb }>;
+
+type CheckoutResponse = Promise<BadRequestError | { order: CheckoutSuccess }>;
 
 export class CheckoutService {
   constructor(
     private _cartRepository = new CartRepository(),
-    private _checkoutRepository = new CheckoutRepository()
+    private _checkoutRepository = new CheckoutRepository(),
+    private _orderMapper = new OrderMapper()
   ) {}
 
   checkout = async (userId: string): CheckoutResponse => {
@@ -37,6 +41,6 @@ export class CheckoutService {
       total: getCartTotalSum(userCart),
     });
 
-    return { order };
+    return { order: this._orderMapper.orderDbToOrderResponse(order) };
   };
 }

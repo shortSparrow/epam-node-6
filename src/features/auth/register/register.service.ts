@@ -1,5 +1,7 @@
 import { UserRepository } from "../../../data/repositories/user.repository";
+import { UserMapper } from "../../../mapper/user.mapper";
 import { BadRequestError } from "../../../models/errors";
+import { RegisterSuccess } from "../auth.models";
 import { registerValidationSchema } from "./register.validation";
 
 type RegisterUserProps = {
@@ -7,18 +9,15 @@ type RegisterUserProps = {
   password: string;
 };
 
-type Success = {
-  id: string;
-  email: string;
-  role: string;
-};
-
 export class RegisterService {
-  constructor(private _userRepository = new UserRepository()) {}
+  constructor(
+    private _userRepository = new UserRepository(),
+    private _userMapper = new UserMapper()
+  ) {}
 
   registerUser = async (
     props: RegisterUserProps
-  ): Promise<BadRequestError | Success> => {
+  ): Promise<BadRequestError | RegisterSuccess> => {
     const validationResult = this._isParamsValid(props);
 
     if (validationResult !== undefined) {
@@ -31,11 +30,7 @@ export class RegisterService {
       role: "admin",
     });
 
-    return {
-      id: user.id,
-      email: user.email,
-      role: "admin",
-    };
+    return this._userMapper.dbUserToRegisterResponse(user);
   };
 
   _isParamsValid(props: RegisterUserProps) {

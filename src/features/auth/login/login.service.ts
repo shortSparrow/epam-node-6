@@ -7,11 +7,11 @@ type LoginProps = {
   password: string;
 };
 
-type Success = {
+type LoginResponse = {
   token: string;
 };
 
-type LoginResult = Promise<BadRequestError | NotFoundError | Success>;
+type LoginResult = Promise<BadRequestError | NotFoundError | LoginResponse>;
 
 export class LoginService {
   constructor(private _userRepository = new UserRepository()) {}
