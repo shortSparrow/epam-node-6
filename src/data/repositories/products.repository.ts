@@ -1,14 +1,13 @@
-import { productsDb } from "../db";
-import { ProductDb } from "../models/product";
+import { ProductDb, ProductDbI } from "../models/product";
 
 export class ProductsRepository {
-  getAllProducts = async (): Promise<ProductDb[]> => {
-    return Promise.resolve(productsDb);
+  getAllProducts = async (): Promise<ProductDbI[]> => {
+    return Promise.resolve(ProductDb.find({}));
   };
 
-  getProductById = async (productId: string): Promise<ProductDb | null> => {
-    const product = productsDb.find((_product) => _product.id === productId);
+  getProductById = async (productId: string): Promise<ProductDbI | null> => {
+    const product = await ProductDb.findOne({ _id: productId });
 
-    return Promise.resolve(product ?? null);
+    return Promise.resolve(product?.toJSON() ?? null);
   };
 }

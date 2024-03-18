@@ -1,20 +1,23 @@
-import { UserDb } from "../models/user";
-import { usersDb } from "../db";
-import { randomUUID } from "crypto";
+import { UserDb, UserDbI } from "../models/user";
+
 import { generateAccessToken } from "../../utils/generateTokens";
 
 export class UserRepository {
-  addUser = async (user: Omit<UserDb, "id" | "token">): Promise<UserDb> => {
-    const id = randomUUID();
+  addUser = async (user: Omit<UserDbI, "_id" | "token">): Promise<UserDbI> => {
     const token = generateAccessToken(user.email);
-    const savedUser: UserDb = { ...user, id, token: token };
-    usersDb.push(savedUser);
+    const savedUser = new UserDb({
+      ...user,
+      token: token,
+    });
 
-    return Promise.resolve(savedUser);
+    const response = await savedUser.save();
+
+    return Promise.resolve(response.toJSON());
   };
 
-  getUserByEmail = async (email: string): Promise<UserDb | null> => {
-    const existingUser = usersDb.find((user) => user.email === email);
-    return Promise.resolve(existingUser ?? null);
+  getUserByEmail = async (email: string): Promise<UserDbI | null> => {
+    const existingUser = await UserDb.findOne({ email: email });
+
+    return Promise.resolve(existingUser?.toJSON() ?? null);
   };
 }

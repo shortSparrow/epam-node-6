@@ -26,6 +26,7 @@ export const registerController = async (
       error: null,
     });
   } catch (err) {
+    console.log('Err: ', err)
     next(err);
   }
 };

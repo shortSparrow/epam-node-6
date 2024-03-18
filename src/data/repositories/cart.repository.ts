@@ -1,42 +1,41 @@
-import { randomUUID } from "crypto";
-import { cartDb } from "../db";
-import { CartDb, CartItemDb } from "../models/cart";
+import { CartDb, CartDbI, CartItemDbI } from "../models/cart";
 
 export class CartRepository {
   addProductToCart = async (
     userId: string,
-    products: CartItemDb[]
-  ): Promise<CartDb> => {
-    const userCartIndex = cartDb.findIndex((cart) => cart.userId === userId);
-    cartDb[userCartIndex].items.push(...products);
-    cartDb[userCartIndex].isDeleted = false;
+    products: CartItemDbI[]
+  ): Promise<CartDbI> => {
+    const result = await CartDb.updateOne(
+      { userId: userId },
+      { isDeleted: false, items: products }
+    );
 
-    return Promise.resolve(cartDb[userCartIndex]);
+    const cart = await CartDb.findOne({ userId: userId });
+
+    return Promise.resolve(cart!.toJSON());
   };
 
   initiateCart = async (userId: string): Promise<string> => {
-    const id = randomUUID();
-
-    cartDb.push({
-      id,
+    const result = await new CartDb({
       userId,
       isDeleted: false,
       items: [],
-    });
+    }).save();
 
-    return Promise.resolve(id);
+    return Promise.resolve(result._id.toString());
   };
 
-  getUserCart = async (userId: string): Promise<CartDb | null> => {
-    const userCart = cartDb.find((cart) => cart.userId === userId);
+  getUserCart = async (userId: string): Promise<CartDbI | null> => {
+    const userCart = await CartDb.findOne({ userId: userId });
 
     return Promise.resolve(userCart ?? null);
   };
 
   deleteUserCart = async (userId: string): Promise<boolean> => {
-    const userCartIndex = cartDb.findIndex((cart) => cart.userId === userId);
-    cartDb[userCartIndex].isDeleted = true;
-    cartDb[userCartIndex].items = [];
+    const result = await CartDb.updateOne(
+      { userId: userId },
+      { isDeleted: true, items: [] }
+    );
 
     return Promise.resolve(true);
   };
