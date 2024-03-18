@@ -1,3 +1,5 @@
-import { OrderDb } from "../../data/models/order";
+import { OrderDbI } from "../../data/models/order";
 
-export interface CheckoutSuccess extends OrderDb {}
+export interface CheckoutSuccess extends Omit<OrderDbI, "_id"> {
+  id: string;
+}

@@ -25,7 +25,7 @@ export class CheckoutService {
 
     const order = await this._checkoutRepository.placeOrder({
       userId,
-      cartId: userCart.id,
+      cartId: userCart._id,
       items: userCart.items,
       payment: {
         type: "paypal",
