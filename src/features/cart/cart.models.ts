@@ -1,8 +1,10 @@
 import { CartItemDb } from "../../data/models/cart";
+import { ProductDb } from "../../data/models/product";
 
 export interface CartResponse {
   userId: string;
-  items: CartItemDb[];
+  // items: CartItemDb[];
+  items: { product: ProductDb; count: number }[];
 }
 
 export interface AddToCartSuccess {

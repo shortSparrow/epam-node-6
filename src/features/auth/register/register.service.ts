@@ -1,6 +1,8 @@
+import { UserDb } from "../../../data/models/user";
 import { UserRepository } from "../../../data/repositories/user.repository";
 import { UserMapper } from "../../../mapper/user.mapper";
 import { BadRequestError } from "../../../models/errors";
+import { generateAccessToken } from "../../../utils/generateTokens";
 import { RegisterSuccess } from "../auth.models";
 import { registerValidationSchema } from "./register.validation";
 
@@ -24,11 +26,14 @@ export class RegisterService {
       return new BadRequestError(validationResult?.message);
     }
 
-    const user = await this._userRepository.addUser({
-      email: props.email,
-      password: props.password,
-      role: "admin",
-    });
+    const user = await this._userRepository.addUser(
+      new UserDb({
+        email: props.email,
+        password: props.password,
+        role: "admin",
+        token: generateAccessToken(props.email),
+      })
+    );
 
     return this._userMapper.dbUserToRegisterResponse(user);
   };

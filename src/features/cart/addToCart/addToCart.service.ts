@@ -1,3 +1,4 @@
+import { CartItemDb } from "../../../data/models/cart";
 import { CartRepository } from "../../../data/repositories/cart.repository";
 import { ProductsRepository } from "../../../data/repositories/products.repository";
 import { CartMapper } from "../../../mapper/cart.mapper";
@@ -37,23 +38,30 @@ export class AddToCartService {
     if (validationResult !== undefined) {
       return new BadRequestError(validationResult?.message);
     }
-
     const productDetails = await this._productsRepository.getProductById(
       productId
     );
+
     const userCart = await this._cartRepository.getUserCart(userId);
 
+    let userCartId: string = userCart?.id || "";
     if (productDetails === null) {
       return new NotFoundError("Product was not found");
     }
 
     if (userCart === null) {
-      await this._cartRepository.initiateCart(userId);
+      userCartId = await this._cartRepository.initiateCart(userId);
     }
 
-    const cart = await this._cartRepository.addProductToCart(userId, [
-      { count, product: productDetails },
-    ]);
+    const cart = await this._cartRepository.addProductToCart(
+      userId,
+      new CartItemDb({
+        count,
+        cartId: userCartId,
+        product: productDetails,
+      })
+    );
+
 
     return {
       cart: this._cartMapper.cartDbToCartResponse(cart),
