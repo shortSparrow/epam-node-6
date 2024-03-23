@@ -7,8 +7,15 @@ export class OrderMapper {
     userId: order.userId,
     cartId: order.cartId,
     items: order.items,
-    payment: order.payment,
-    delivery: order.delivery,
+    payment: {
+      type: order.payment.type,
+      address: order.payment.address,
+      creditCard: order.payment.creditCard,
+    },
+    delivery: {
+      type: order.delivery.type,
+      address: order.delivery.address,
+    },
     comments: order.comments,
     status: order.status,
     total: order.total,

@@ -1,20 +1,18 @@
 import { UserDb } from "../models/user";
-import { usersDb } from "../db";
-import { randomUUID } from "crypto";
-import { generateAccessToken } from "../../utils/generateTokens";
+import { AppDataSource } from "../db";
 
 export class UserRepository {
-  addUser = async (user: Omit<UserDb, "id" | "token">): Promise<UserDb> => {
-    const id = randomUUID();
-    const token = generateAccessToken(user.email);
-    const savedUser: UserDb = { ...user, id, token: token };
-    usersDb.push(savedUser);
+  addUser = async (user: UserDb): Promise<UserDb> => {
+    const result = await AppDataSource.manager.save(user);
 
-    return Promise.resolve(savedUser);
+    return Promise.resolve(result);
   };
 
   getUserByEmail = async (email: string): Promise<UserDb | null> => {
-    const existingUser = usersDb.find((user) => user.email === email);
-    return Promise.resolve(existingUser ?? null);
+    const existingUser = await AppDataSource.getRepository(UserDb).findOneBy({
+      email,
+    });
+
+    return Promise.resolve(existingUser);
   };
 }
