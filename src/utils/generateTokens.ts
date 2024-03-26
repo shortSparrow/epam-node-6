@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+import { AuthToken } from "../..";
 
-export const generateAccessToken = (email: string) => {
-  return jwt.sign({ email }, "secret_from_env", {
-    expiresIn: "1d", // The user has to re-login every day, I know, I'm evil 😈😈😈
+export const generateAccessToken = ({ email, role, id }: AuthToken) => {
+  return jwt.sign({ email, role, id }, "secret_from_env", {
+    expiresIn: "2h",
   });
 };

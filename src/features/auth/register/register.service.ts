@@ -1,6 +1,7 @@
 import { UserRepository } from "../../../data/repositories/user.repository";
 import { UserMapper } from "../../../mapper/user.mapper";
 import { BadRequestError } from "../../../models/errors";
+import { hashPassword } from "../../../utils/hashPassword";
 import { RegisterSuccess } from "../auth.models";
 import { registerValidationSchema } from "./register.validation";
 
@@ -24,9 +25,11 @@ export class RegisterService {
       return new BadRequestError(validationResult?.message);
     }
 
+    const hashedPassword = await hashPassword(props.password);
+
     const user = await this._userRepository.addUser({
       email: props.email,
-      password: props.password,
+      password: hashedPassword,
       role: "admin",
     });
 
