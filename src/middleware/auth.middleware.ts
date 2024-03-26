@@ -35,8 +35,6 @@ export const authMiddleware = (
       if (user === null) {
         return res.status(403).send("You must be authorized user");
       }
-      token.id = user.id;
-
       req.verifiedToken = token;
       next();
     });

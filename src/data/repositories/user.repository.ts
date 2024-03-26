@@ -6,8 +6,7 @@ import { generateAccessToken } from "../../utils/generateTokens";
 export class UserRepository {
   addUser = async (user: Omit<UserDb, "id" | "token">): Promise<UserDb> => {
     const id = randomUUID();
-    const token = generateAccessToken(user.email);
-    const savedUser: UserDb = { ...user, id, token: token };
+    const savedUser: UserDb = { ...user, id};
     usersDb.push(savedUser);
 
     return Promise.resolve(savedUser);

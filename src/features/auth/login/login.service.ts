@@ -1,5 +1,7 @@
 import { UserRepository } from "../../../data/repositories/user.repository";
 import { BadRequestError, NotFoundError } from "../../../models/errors";
+import { generateAccessToken } from "../../../utils/generateTokens";
+import { isPasswordMath } from "../../../utils/hashPassword";
 import { loginValidationSchema } from "./login.validation";
 
 type LoginProps = {
@@ -25,16 +27,23 @@ export class LoginService {
 
     const user = await this._userRepository.getUserByEmail(props.email);
 
-    if (
-      user == null ||
-      user.password !== props.password ||
-      user.email !== props.email
-    ) {
+    const isPasswordValid = await isPasswordMath(
+      props.password,
+      user?.password || ""
+    );
+
+    if (user == null || user.email !== props.email || !isPasswordValid) {
       return new BadRequestError("email or password invalid");
     }
 
+    const token = generateAccessToken({
+      email: user.email,
+      role: "admin",
+      id: user.id,
+    });
+
     return {
-      token: user?.token,
+      token: token,
     };
   };
 
